@@ -2,8 +2,8 @@ name: 3D Contribution Graph
 
 on:
   schedule:
-    - cron: "0 4 * * *" # Se actualiza solo cada día a las 04:00 UTC
-  workflow_dispatch:    # Permite ejecutarlo manualmente cuando quieras
+    - cron: "0 4 * * *"
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -12,8 +12,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: yoshi389111/github-profile-3d-contrib@main
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate 3D Contribution SVG
+        uses: yoshi389111/github-profile-3d-contrib@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           USERNAME: ${{ github.repository_owner }}
+
+      - name: Commit and Push SVGs
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: update 3D contribution graph"
+          file_pattern: "profile-3d-contrib/*.svg"
